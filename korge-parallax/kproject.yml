@@ -1,4 +1,4 @@
-name: "korge-mymodule"
+name: "korge-parallax"
 plugins:
   #- serialization
 dependencies:
