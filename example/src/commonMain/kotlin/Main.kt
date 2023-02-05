@@ -3,7 +3,6 @@ import com.soywiz.korev.*
 import com.soywiz.korge.*
 import com.soywiz.korge.scene.*
 import com.soywiz.korge.view.*
-import com.soywiz.korge.view.animation.*
 import com.soywiz.korge.view.filter.*
 import com.soywiz.korim.atlas.*
 import com.soywiz.korio.async.*
@@ -11,6 +10,7 @@ import com.soywiz.korio.file.*
 import com.soywiz.korio.file.std.*
 import com.soywiz.korio.lang.*
 import com.soywiz.korma.geom.*
+import org.korge.parallax.*
 
 suspend fun main() = Korge {
     sceneContainer().changeTo({ MainAseParallaxSample() })

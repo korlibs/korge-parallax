@@ -141,7 +141,7 @@ class ParallaxDataView(
 
         layerMap[config.name] = container {
             parallaxPlane.imageDatas.fastForEach { data ->
-                imageDataView(data, playing = false, smoothing = smoothing, repeating = true) {
+                imageDataViewEx(data, playing = false, smoothing = smoothing, repeating = true) {
                     val layer = getLayer(config.name)
                     if (layer == null) {
                         error("Could not find parallax plane '${config.name}' in ImageData. Check that name of parallax plane in Aseprite matches the name in the parallax config.")
@@ -166,7 +166,7 @@ class ParallaxDataView(
         if (attachedLayers != null && config.attachedLayers != null) {
             if (attachedLayers.frames.isEmpty()) error("No attached layers not found. Check that name of attached layers in Aseprite matches the name in the parallax config.")
 
-            val imageData = imageDataView(attachedLayers, playing = false, smoothing = smoothing, repeating = true)
+            val imageData = imageDataViewEx(attachedLayers, playing = false, smoothing = smoothing, repeating = true)
 
             for (conf in config.attachedLayers) {
                 val layer = imageData.getLayer(conf.name)
@@ -205,7 +205,7 @@ class ParallaxDataView(
     ) {
         if (layers == null || config == null || layers.frames.isEmpty()) return
 
-        val imageData = imageDataView(layers, playing = false, smoothing = smoothing, repeating = true)
+        val imageData = imageDataViewEx(layers, playing = false, smoothing = smoothing, repeating = true)
 
         for (conf in config) {
             val layer = imageData.getLayer(conf.name)
