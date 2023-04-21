@@ -1,4 +1,4 @@
-package org.korge.samples.mymodule
+package korlibs.korge.samples.mymodule
 
 import kotlin.test.*
 

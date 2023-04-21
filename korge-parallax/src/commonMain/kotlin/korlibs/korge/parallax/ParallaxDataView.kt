@@ -1,16 +1,16 @@
-package org.korge.parallax
+package korlibs.korge.parallax
 
-import com.soywiz.kds.ExtraTypeCreate
-import com.soywiz.kds.iterators.fastForEach
-import com.soywiz.kds.setExtra
-import com.soywiz.kmem.clamp
-import com.soywiz.korge.view.*
-import com.soywiz.korge.view.animation.*
-import com.soywiz.korim.atlas.MutableAtlas
-import com.soywiz.korim.format.*
-import com.soywiz.korio.file.VfsFile
-import com.soywiz.korio.file.baseName
-import com.soywiz.korma.geom.SizeInt
+import korlibs.datastructure.ExtraTypeCreate
+import korlibs.datastructure.iterators.fastForEach
+import korlibs.datastructure.setExtra
+import korlibs.memory.clamp
+import korlibs.korge.view.*
+import korlibs.korge.view.animation.*
+import korlibs.image.atlas.MutableAtlas
+import korlibs.image.format.*
+import korlibs.io.file.VfsFile
+import korlibs.io.file.baseName
+import korlibs.math.geom.SizeInt
 
 inline fun Container.parallaxDataView(
     data: ParallaxDataContainer,
@@ -148,16 +148,16 @@ class ParallaxDataView(
                     } else layer as SingleTile
                     if (isScrollingHorizontally) {
                         layer.repeat(repeatX = true)
-                        x = parallaxPlaneMiddlePoint
+                        x = parallaxPlaneMiddlePoint.toFloat()
                         val speedFactor = parallaxPlaneSpeedFactor[layer.y.toInt()]
                         // Calculate the offset for the inner scrolling of the layer depending of its y-position
-                        if (!disableScrollingX) addUpdater { x += ((deltaX * speedFactor) + (config.selfSpeed * speedFactor)) * it.milliseconds }
+                        if (!disableScrollingX) addUpdater { x += (((deltaX * speedFactor) + (config.selfSpeed * speedFactor)) * it.milliseconds).toFloat() }
                     } else {
                         layer.repeat(repeatY = true)
-                        y = parallaxPlaneMiddlePoint
+                        y = parallaxPlaneMiddlePoint.toFloat()
                         val speedFactor = parallaxPlaneSpeedFactor[layer.x.toInt()]
                         // Calculate the offset for the inner scrolling of the layer depending of its x-position
-                        if (!disableScrollingY) addUpdater { y += ((deltaY * speedFactor) + (config.selfSpeed * speedFactor)) * it.milliseconds }
+                        if (!disableScrollingY) addUpdater { y += (((deltaY * speedFactor) + (config.selfSpeed * speedFactor)) * it.milliseconds).toFloat() }
                     }
                 }
             }
@@ -181,13 +181,13 @@ class ParallaxDataView(
                         val speedFactor =parallaxPlaneSpeedFactor[layer.y.toInt() + (layer.height.toInt().takeIf { conf.attachBottomRight } ?: 0)]
                         addUpdater {
                             // Calculate the offset for the inner scrolling of the layer
-                            x += ((deltaX * speedFactor) + (config.selfSpeed * speedFactor)) * it.milliseconds
+                            x += (((deltaX * speedFactor) + (config.selfSpeed * speedFactor)) * it.milliseconds).toFloat()
                         }
                     } else if (!disableScrollingY && !isScrollingHorizontally) {
                         val speedFactor = parallaxPlaneSpeedFactor[layer.x.toInt() + (layer.width.toInt().takeIf { conf.attachBottomRight } ?: 0)]
                         addUpdater {
                             // Calculate the offset for the inner scrolling of the layer
-                            x += ((deltaY * speedFactor) + (config.selfSpeed * speedFactor)) * it.milliseconds
+                            x += (((deltaY * speedFactor) + (config.selfSpeed * speedFactor)) * it.milliseconds).toFloat()
                         }
                     }
                 }
@@ -225,20 +225,20 @@ class ParallaxDataView(
                     // Calculate the offset for the inner scrolling of the layer
                     when (mode) {
                         ParallaxConfig.Mode.HORIZONTAL_PLANE -> {
-                            if (!disableScrollingX) { addUpdater { x += (deltaX * speedX + selfSpeedX) * it.milliseconds } }
+                            if (!disableScrollingX) { addUpdater { x += ((deltaX * speedX + selfSpeedX) * it.milliseconds).toFloat() } }
                         }
                         ParallaxConfig.Mode.VERTICAL_PLANE -> {
-                            if (!disableScrollingY) { addUpdater { y += (deltaY * speedY + selfSpeedY) * it.milliseconds } }
+                            if (!disableScrollingY) { addUpdater { y += ((deltaY * speedY + selfSpeedY) * it.milliseconds).toFloat() } }
                         }
                         ParallaxConfig.Mode.NO_PLANE -> {
                             if (!disableScrollingX && !disableScrollingY) {
                                 addUpdater {
-                                    x += (deltaX * speedX + selfSpeedX) * it.milliseconds
-                                    y += (deltaY * speedY + selfSpeedY) * it.milliseconds
+                                    x += ((deltaX * speedX + selfSpeedX) * it.milliseconds).toFloat()
+                                    y += ((deltaY * speedY + selfSpeedY) * it.milliseconds).toFloat()
                                 }
                             }
-                            if (!disableScrollingX && disableScrollingY) { addUpdater { x += (deltaX * speedX + selfSpeedX) * it.milliseconds } }
-                            if (disableScrollingX && !disableScrollingY) { addUpdater { y += (deltaY * speedY + selfSpeedY) * it.milliseconds } }
+                            if (!disableScrollingX && disableScrollingY) { addUpdater { x += ((deltaX * speedX + selfSpeedX) * it.milliseconds).toFloat() } }
+                            if (disableScrollingX && !disableScrollingY) { addUpdater { y += ((deltaY * speedY + selfSpeedY) * it.milliseconds).toFloat() } }
                         }
                     }
                 }
@@ -248,7 +248,7 @@ class ParallaxDataView(
 
     init {
         // Only the base container for all view objects needs to be scaled
-        this.scale = scale
+        this.scaleAvg = scale.toFloat()
 
         // First create background layers in the back
         constructLayer(data.backgroundLayers, data.config.backgroundLayers, data.config.mode, smoothing, disableScrollingX, disableScrollingY)
@@ -270,12 +270,12 @@ class ParallaxDataView(
                 addUpdater {
                     // Sanity check of diagonal movement - it has to be between 0.0 and 1.0
                     diagonal = diagonal.clamp(0.0, 1.0)
-                    y = -(diagonal * (parallaxLayerSize - data.config.size.height))
+                    y = (-(diagonal * (parallaxLayerSize - data.config.size.height))).toFloat()
                 }
             } else if (!disableScrollingX && data.config.mode == ParallaxConfig.Mode.VERTICAL_PLANE) {
                 addUpdater {
                     diagonal = diagonal.clamp(0.0, 1.0)
-                    x = -(diagonal * (parallaxLayerSize - data.config.size.width))
+                    x = (-(diagonal * (parallaxLayerSize - data.config.size.width))).toFloat()
                 }
             }
         }

@@ -1,13 +1,13 @@
-package org.korge.parallax
+package korlibs.korge.parallax
 
-import com.soywiz.kds.IntArray2
-import com.soywiz.kds.toStacked
-import com.soywiz.korge.view.Container
-import com.soywiz.korge.view.SmoothedBmpSlice
-import com.soywiz.korge.view.ViewDslMarker
-import com.soywiz.korge.view.addTo
-import com.soywiz.korge.view.tiles.*
-import com.soywiz.korim.bitmap.*
+import korlibs.datastructure.IntArray2
+import korlibs.image.bitmap.*
+import korlibs.korge.view.Container
+import korlibs.korge.view.SmoothedBmpSlice
+import korlibs.korge.view.ViewDslMarker
+import korlibs.korge.view.addTo
+import korlibs.korge.view.tiles.*
+import korlibs.math.geom.Size
 
 inline fun Container.repeatedImageView(
     bitmap: BmpSlice,
@@ -25,20 +25,17 @@ open class SingleTile(
 ) : BaseTileMap(IntArray2(1, 1, 0), smoothing), SmoothedBmpSlice {
     override val tilesetTextures = Array<BitmapCoords?>(1) { bitmap }
 
-    override var width = 0.0
-    override var height = 0.0
+    override var unscaledSize: Size = Size.ZERO
 
     override var bitmap: BitmapCoords = bitmap
         set(value) {
             if (field !== value) {
                 field = value
                 tilesetTextures[0] = value
-                this.width = value.width.toDouble()
-                this.height = value.height.toDouble()
-                tileWidth = width
-                tileHeight = height
-                tileSize.width = width
-                tileSize.height = height
+                this.size = Size(value.width, value.height)
+                tileWidth = width.toDouble()
+                tileHeight = height.toDouble()
+                tileSize = Size(width, height)
                 contentVersion++
             }
         }

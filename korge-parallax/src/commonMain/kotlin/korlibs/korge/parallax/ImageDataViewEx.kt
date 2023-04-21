@@ -1,11 +1,11 @@
-package org.korge.parallax
+package korlibs.korge.parallax
 
-import com.soywiz.korge.view.Container
-import com.soywiz.korge.view.View
-import com.soywiz.korge.view.ViewDslMarker
-import com.soywiz.korge.view.addTo
-import com.soywiz.korge.view.animation.*
-import com.soywiz.korim.format.ImageData
+import korlibs.korge.view.Container
+import korlibs.korge.view.View
+import korlibs.korge.view.ViewDslMarker
+import korlibs.korge.view.addTo
+import korlibs.korge.view.animation.*
+import korlibs.image.format.ImageData
 
 /**
  * With imageDataView it is possible to display an image inside a Container or View.

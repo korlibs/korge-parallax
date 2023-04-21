@@ -1,9 +1,9 @@
-package org.korge.parallax
+package korlibs.korge.parallax
 
-import com.soywiz.korge.view.*
-import com.soywiz.korge.view.animation.*
-import com.soywiz.korim.bitmap.*
-import com.soywiz.korim.format.*
+import korlibs.korge.view.*
+import korlibs.korge.view.animation.*
+import korlibs.image.bitmap.*
+import korlibs.image.format.*
 
 inline fun Container.repeatedImageAnimationView(
     animation: ImageAnimation? = null,

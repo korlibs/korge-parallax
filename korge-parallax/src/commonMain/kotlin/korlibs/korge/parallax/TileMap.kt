@@ -1,18 +1,18 @@
-package org.korge.parallax
+package korlibs.korge.parallax
 
-import com.soywiz.kds.*
-import com.soywiz.kds.IntArray2
-import com.soywiz.kds.iterators.*
-import com.soywiz.klock.*
-import com.soywiz.kmem.*
-import com.soywiz.korge.internal.*
-import com.soywiz.korge.render.*
-import com.soywiz.korge.view.*
-import com.soywiz.korge.view.tiles.*
-import com.soywiz.korim.bitmap.*
-import com.soywiz.korim.tiles.*
-import com.soywiz.korim.tiles.TileSet
-import com.soywiz.korma.geom.*
+import korlibs.datastructure.*
+import korlibs.datastructure.IntArray2
+import korlibs.datastructure.iterators.*
+import korlibs.time.*
+import korlibs.memory.*
+import korlibs.korge.internal.*
+import korlibs.korge.render.*
+import korlibs.korge.view.*
+import korlibs.korge.view.tiles.*
+import korlibs.image.bitmap.*
+import korlibs.image.tiles.*
+import korlibs.image.tiles.TileSet
+import korlibs.math.geom.*
 import kotlin.math.*
 
 inline fun Container.tileMap(
@@ -59,11 +59,11 @@ abstract class BaseTileMap(
     var repeatX = TileMapRepeat.NONE
     var repeatY = TileMapRepeat.NONE
 
-    private val t0 = Point(0, 0)
-    private val tt0 = Point(0, 0)
-    private val tt1 = Point(0, 0)
-    private val tt2 = Point(0, 0)
-    private val tt3 = Point(0, 0)
+    private val t0 = MPoint(0, 0)
+    private val tt0 = MPoint(0, 0)
+    private val tt1 = MPoint(0, 0)
+    private val tt2 = MPoint(0, 0)
+    private val tt3 = MPoint(0, 0)
 
     protected var contentVersion = 0
     private var cachedContentVersion = 0
@@ -114,7 +114,7 @@ abstract class BaseTileMap(
         //private const val BL = 3
     }
 
-    private val infosPool = Pool { Info(Bitmaps.transparent.bmpBase, dummyTexturedVertexArray) }
+    private val infosPool = Pool { Info(Bitmaps.transparent.base, dummyTexturedVertexArray) }
     private var lastVirtualRect = Rectangle(-1, -1, -1, -1)
     private var currentVirtualRect = Rectangle(-1, -1, -1, -1)
 
@@ -156,13 +156,13 @@ abstract class BaseTileMap(
         }
 
         val colMul = renderColorMul
-        val colAdd = renderColorAdd
+        //val colAdd = renderColorAdd
 
         // @TODO: Bounds in clipped view
-        val pp0 = globalToLocal(t0.setTo(currentVirtualRect.left, currentVirtualRect.top), tt0)
-        val pp1 = globalToLocal(t0.setTo(currentVirtualRect.right, currentVirtualRect.bottom), tt1)
-        val pp2 = globalToLocal(t0.setTo(currentVirtualRect.right, currentVirtualRect.top), tt2)
-        val pp3 = globalToLocal(t0.setTo(currentVirtualRect.left, currentVirtualRect.bottom), tt3)
+        val pp0 = globalToLocal(Point(currentVirtualRect.left, currentVirtualRect.top))
+        val pp1 = globalToLocal(Point(currentVirtualRect.right, currentVirtualRect.bottom))
+        val pp2 = globalToLocal(Point(currentVirtualRect.right, currentVirtualRect.top))
+        val pp3 = globalToLocal(Point(currentVirtualRect.left, currentVirtualRect.bottom))
         val mapTileWidth = tileSize.width
         val mapTileHeight = tileSize.height / if (staggerAxis == TileMapStaggerAxis.Y) 2.0 else 1.0
         val mx0 = ((pp0.x / mapTileWidth) - 1).toInt()
@@ -237,9 +237,9 @@ abstract class BaseTileMap(
 
                     //println("CELL_DATA_TEX: $tex")
 
-                    val info = verticesPerTex.getOrPut(tex.bmpBase) {
+                    val info = verticesPerTex.getOrPut(tex.base) {
                         infosPool.alloc().also { info ->
-                            info.tex = tex.bmpBase
+                            info.tex = tex.base
                             if (info.vertices.initialVcount < allocTiles * 4) {
                                 info.vertices = TexturedVertexArray(allocTiles * 4, TexturedVertexArray.quadIndices(allocTiles))
                                 //println("ALLOC TexturedVertexArray")
@@ -263,22 +263,22 @@ abstract class BaseTileMap(
                         val p3X = p0X + dVX
                         val p3Y = p0Y + dVY
 
-                        tempX[0] = tex.tl_x
-                        tempX[1] = tex.tr_x
-                        tempX[2] = tex.br_x
-                        tempX[3] = tex.bl_x
+                        tempX[0] = tex.tlX
+                        tempX[1] = tex.trX
+                        tempX[2] = tex.brX
+                        tempX[3] = tex.blX
 
-                        tempY[0] = tex.tl_y
-                        tempY[1] = tex.tr_y
-                        tempY[2] = tex.br_y
-                        tempY[3] = tex.bl_y
+                        tempY[0] = tex.tlY
+                        tempY[1] = tex.trY
+                        tempY[2] = tex.brY
+                        tempY[3] = tex.blY
 
                         computeIndices(flipX = flipX, flipY = flipY, rotate = rotate, indices = indices)
 
-                        info.vertices.quadV(info.vcount++, p0X, p0Y, tempX[indices[0]], tempY[indices[0]], colMul, colAdd)
-                        info.vertices.quadV(info.vcount++, p1X, p1Y, tempX[indices[1]], tempY[indices[1]], colMul, colAdd)
-                        info.vertices.quadV(info.vcount++, p2X, p2Y, tempX[indices[2]], tempY[indices[2]], colMul, colAdd)
-                        info.vertices.quadV(info.vcount++, p3X, p3Y, tempX[indices[3]], tempY[indices[3]], colMul, colAdd)
+                        info.vertices.quadV(info.vcount++, p0X.toFloat(), p0Y.toFloat(), tempX[indices[0]], tempY[indices[0]], colMul)
+                        info.vertices.quadV(info.vcount++, p1X.toFloat(), p1Y.toFloat(), tempX[indices[1]], tempY[indices[1]], colMul)
+                        info.vertices.quadV(info.vcount++, p2X.toFloat(), p2Y.toFloat(), tempX[indices[2]], tempY[indices[2]], colMul)
+                        info.vertices.quadV(info.vcount++, p3X.toFloat(), p3Y.toFloat(), tempX[indices[3]], tempY[indices[3]], colMul)
                     }
 
                     info.icount += 6
@@ -290,10 +290,10 @@ abstract class BaseTileMap(
 
     override fun renderInternal(ctx: RenderContext) {
         if (!visible) return
-        currentVirtualRect.setBounds(ctx.virtualLeft, ctx.virtualTop, ctx.virtualRight, ctx.virtualBottom)
+        currentVirtualRect = Rectangle.fromBounds(ctx.virtualLeft, ctx.virtualTop, ctx.virtualRight, ctx.virtualBottom)
         if (currentVirtualRect != lastVirtualRect) {
             dirtyVertices = true
-            lastVirtualRect.copyFrom(currentVirtualRect)
+            lastVirtualRect = currentVirtualRect
         }
         computeVertexIfRequired(ctx)
 
@@ -346,8 +346,9 @@ open class TileMap(
         //println(tileset.collisions.toList())
         if (!intMap.inside(tileX, tileY)) return true
         val tile = intMap[tileX, tileY]
-        val collision = tileset.collisions[tile] ?: return false
-        return collision.hitTestAny(x.toDouble(), y.toDouble(), direction)
+
+        val collision = tileset.getInfo(tile)?.collision ?: return false
+        return collision.hitTestAny(Point(x, y), direction)
     }
 
     // Analogous to Bitmap32.locking
@@ -388,8 +389,8 @@ open class TileMap(
         }
     }
 
-    override fun getLocalBoundsInternal(out: Rectangle) {
-        out.setTo(0, 0, tileWidth * intMap.width, tileHeight * intMap.height)
+    override fun getLocalBoundsInternal(): Rectangle {
+        return Rectangle(0.0, 0.0, tileWidth * intMap.width, tileHeight * intMap.height)
     }
 
     //override fun hitTest(x: Double, y: Double): View? {

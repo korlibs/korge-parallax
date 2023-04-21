@@ -1,16 +1,16 @@
-import com.soywiz.klock.*
-import com.soywiz.korev.*
-import com.soywiz.korge.*
-import com.soywiz.korge.scene.*
-import com.soywiz.korge.view.*
-import com.soywiz.korge.view.filter.*
-import com.soywiz.korim.atlas.*
-import com.soywiz.korio.async.*
-import com.soywiz.korio.file.*
-import com.soywiz.korio.file.std.*
-import com.soywiz.korio.lang.*
-import com.soywiz.korma.geom.*
-import org.korge.parallax.*
+import korlibs.time.*
+import korlibs.event.*
+import korlibs.korge.*
+import korlibs.korge.scene.*
+import korlibs.korge.view.*
+import korlibs.korge.view.filter.*
+import korlibs.image.atlas.*
+import korlibs.io.async.*
+import korlibs.io.file.*
+import korlibs.io.file.std.*
+import korlibs.io.lang.*
+import korlibs.math.geom.*
+import korlibs.korge.parallax.*
 
 suspend fun main() = Korge {
     sceneContainer().changeTo({ MainAseParallaxSample() })
@@ -26,7 +26,7 @@ class MainAseParallaxSample : Scene() {
         val rootSceneContainer = sceneContainer()
 
         rootSceneContainer.changeTo<ParallaxScene>(
-            transition = MaskTransition(transition = TransitionFilter.Transition.CIRCULAR, reversed = false, spread = 1.0),
+            transition = MaskTransition(transition = TransitionFilter.Transition.CIRCULAR, reversed = false, spread = 1f),
             time = 0.5.seconds
         )
     }
