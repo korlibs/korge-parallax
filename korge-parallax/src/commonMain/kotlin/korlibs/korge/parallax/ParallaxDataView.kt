@@ -3,14 +3,15 @@ package korlibs.korge.parallax
 import korlibs.datastructure.ExtraTypeCreate
 import korlibs.datastructure.iterators.fastForEach
 import korlibs.datastructure.setExtra
-import korlibs.memory.clamp
 import korlibs.korge.view.*
 import korlibs.korge.view.animation.*
 import korlibs.image.atlas.MutableAtlas
 import korlibs.image.format.*
 import korlibs.io.file.VfsFile
 import korlibs.io.file.baseName
+import korlibs.math.clamp
 import korlibs.math.geom.SizeInt
+import korlibs.time.milliseconds
 
 inline fun Container.parallaxDataView(
     data: ParallaxDataContainer,
@@ -148,13 +149,13 @@ class ParallaxDataView(
                     } else layer as SingleTile
                     if (isScrollingHorizontally) {
                         layer.repeat(repeatX = true)
-                        x = parallaxPlaneMiddlePoint.toFloat()
+                        x = parallaxPlaneMiddlePoint
                         val speedFactor = parallaxPlaneSpeedFactor[layer.y.toInt()]
                         // Calculate the offset for the inner scrolling of the layer depending of its y-position
                         if (!disableScrollingX) addUpdater { x += (((deltaX * speedFactor) + (config.selfSpeed * speedFactor)) * it.milliseconds).toFloat() }
                     } else {
                         layer.repeat(repeatY = true)
-                        y = parallaxPlaneMiddlePoint.toFloat()
+                        y = parallaxPlaneMiddlePoint
                         val speedFactor = parallaxPlaneSpeedFactor[layer.x.toInt()]
                         // Calculate the offset for the inner scrolling of the layer depending of its x-position
                         if (!disableScrollingY) addUpdater { y += (((deltaY * speedFactor) + (config.selfSpeed * speedFactor)) * it.milliseconds).toFloat() }
@@ -248,7 +249,7 @@ class ParallaxDataView(
 
     init {
         // Only the base container for all view objects needs to be scaled
-        this.scaleAvg = scale.toFloat()
+        this.scale = scale
 
         // First create background layers in the back
         constructLayer(data.backgroundLayers, data.config.backgroundLayers, data.config.mode, smoothing, disableScrollingX, disableScrollingY)
@@ -270,12 +271,12 @@ class ParallaxDataView(
                 addUpdater {
                     // Sanity check of diagonal movement - it has to be between 0.0 and 1.0
                     diagonal = diagonal.clamp(0.0, 1.0)
-                    y = (-(diagonal * (parallaxLayerSize - data.config.size.height))).toFloat()
+                    y = (-(diagonal * (parallaxLayerSize - data.config.size.height)))
                 }
             } else if (!disableScrollingX && data.config.mode == ParallaxConfig.Mode.VERTICAL_PLANE) {
                 addUpdater {
                     diagonal = diagonal.clamp(0.0, 1.0)
-                    x = (-(diagonal * (parallaxLayerSize - data.config.size.width))).toFloat()
+                    x = (-(diagonal * (parallaxLayerSize - data.config.size.width)))
                 }
             }
         }

@@ -14,6 +14,9 @@ import korlibs.image.tiles.*
 import korlibs.image.tiles.TileSet
 import korlibs.math.geom.*
 import korlibs.math.geom.collider.*
+import korlibs.math.isEven
+import korlibs.math.isOdd
+import korlibs.math.nextPowerOfTwo
 import kotlin.math.*
 
 inline fun Container.tileMap(
