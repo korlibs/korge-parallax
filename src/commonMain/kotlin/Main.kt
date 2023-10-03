@@ -26,7 +26,7 @@ class MainAseParallaxSample : Scene() {
         val rootSceneContainer = sceneContainer()
 
         rootSceneContainer.changeTo<ParallaxScene>(
-            transition = MaskTransition(transition = TransitionFilter.Transition.CIRCULAR, reversed = false, spread = 1f),
+            transition = MaskTransition(transition = TransitionFilter.Transition.CIRCULAR, reversed = false, spread = 1.0),
             time = 0.5.seconds
         )
     }
