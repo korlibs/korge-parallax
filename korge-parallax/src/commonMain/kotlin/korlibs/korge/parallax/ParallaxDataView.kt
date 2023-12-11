@@ -9,8 +9,10 @@ import korlibs.image.atlas.MutableAtlas
 import korlibs.image.format.*
 import korlibs.io.file.VfsFile
 import korlibs.io.file.baseName
+import korlibs.math.clamp
 import korlibs.math.geom.SizeInt
-import korlibs.time.TimeSpan
+import korlibs.time.*
+
 
 inline fun Container.parallaxDataView(
     data: ParallaxDataContainer,
@@ -155,10 +157,10 @@ class ParallaxDataView(
                     } else parallaxLines[i] = (layer as SingleTile).apply {
                         if (isScrollingHorizontally) {
                             layer.repeat(repeatX = true)
-                            x = parallaxPlaneMiddlePoint
+                            x = parallaxPlaneMiddlePoint.toDouble()
                         } else {
                             layer.repeat(repeatY = true)
-                            y = parallaxPlaneMiddlePoint
+                            y = parallaxPlaneMiddlePoint.toDouble()
                         }
                     }
                 }
@@ -221,7 +223,7 @@ class ParallaxDataView(
 
     init {
         // Only the base container for all view objects needs to be scaled
-        this.scaleAvg = scale
+        this.scale = scale.toDouble()
 
         // First create background layers in the back
         constructLayer(data.backgroundLayers, data.config.backgroundLayers, smoothing)
@@ -238,21 +240,18 @@ class ParallaxDataView(
             )
 
 // TODO move this into PositionSystem
-//            val parallaxSize = parallaxLayerSize - (data.config.parallaxPlane?.offset ?: 0)
 //            // Do horizontal or vertical movement depending on parallax scrolling direction
 //            if (!disableScrollingY && data.config.mode == ParallaxConfig.Mode.HORIZONTAL_PLANE) {
-//                val height = data.config.parallaxPlane?.size?.height?.toFloat() ?: 0.0
 //                // Move parallax plane inside borders
 //                addUpdater {
 //                    // Sanity check of diagonal movement - it has to be between 0.0 and 1.0
 //                    diagonal = diagonal.clamp(0.0, 1.0)
-//                    y = -(diagonal * (parallaxLayerSize - height))
+//                    y = (-(diagonal * (parallaxLayerSize - data.config.size.height)))
 //                }
 //            } else if (!disableScrollingX && data.config.mode == ParallaxConfig.Mode.VERTICAL_PLANE) {
-//                val width = data.config.parallaxPlane?.size?.width?.toFloat() ?: 0.0
 //                addUpdater {
 //                    diagonal = diagonal.clamp(0.0, 1.0)
-//                    x = -(diagonal * (parallaxLayerSize - width))
+//                    x = (-(diagonal * (parallaxLayerSize - data.config.size.width)))
 //                }
 //            }
         }

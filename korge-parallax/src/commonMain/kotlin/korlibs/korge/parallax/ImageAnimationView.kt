@@ -10,6 +10,7 @@ import korlibs.image.format.*
 import korlibs.image.tiles.*
 import korlibs.korge.view.animation.Playable
 import korlibs.korge.view.tiles.TileMap
+import korlibs.math.*
 
 inline fun Container.imageAnimationView(
     animation: ImageAnimation? = null,
