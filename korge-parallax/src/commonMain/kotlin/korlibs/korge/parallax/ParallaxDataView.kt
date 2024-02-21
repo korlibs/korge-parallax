@@ -112,17 +112,17 @@ class ParallaxDataView(
     // The array will contain numbers starting from 1.0 -> 0.0 and then from 0.0 -> 1.0
     // The first part of the array is used as speed factor for the upper / left side of the parallax plane.
     // The second part is used for the lower / right side of the parallax plane.
-    val parallaxPlaneSpeedFactor = FloatArray(
+    val parallaxPlaneSpeedFactor = DoubleArray(
         parallaxLayerSize
     ) { i ->
-        val midPoint: Float = parallaxLayerSize * 0.5f
-        (data.config.parallaxPlane?.speedFactor ?: 1.0f) * (
+        val midPoint: Double = parallaxLayerSize * 0.5
+        (data.config.parallaxPlane?.speedFactor ?: 1.0) * (
             // The pixel in the point of view must not stand still, they need to move with the lowest possible speed (= 1 / midpoint)
             // Otherwise the midpoint is "running" away over time
             if (i < midPoint)
-                1f - (i / midPoint)
+                1.0 - (i / midPoint)
             else
-                (i - midPoint + 1f) / midPoint
+                (i - midPoint + 1.0) / midPoint
             )
     }
 
@@ -381,7 +381,7 @@ data class ParallaxPlaneConfig(
     val size: SizeInt,
     val offset: Int = 0,
     val name: String,
-    val speedFactor: Float = 1.0f,
+    val speedFactor: Double = 1.0,
     val selfSpeed: Float = 0.0f,
     val attachedLayersFront: List<ParallaxAttachedLayerConfig>? = null,
     val attachedLayersRear: List<ParallaxAttachedLayerConfig>? = null

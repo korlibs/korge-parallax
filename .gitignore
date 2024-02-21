@@ -2,6 +2,7 @@
 .gradle
 /build/
 /korge-parallax/build.gradle
+/korge-parallax/.gitignore
 
 # Ignore Gradle GUI config
 gradle-app.setting
