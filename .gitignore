@@ -1,6 +1,7 @@
 .DS_Store
 .gradle
 /build/
+/korge-parallax/build/
 /korge-parallax/build.gradle
 /korge-parallax/.gitignore
 

@@ -16,7 +16,7 @@ import korlibs.time.*
 
 inline fun Container.parallaxDataView(
     data: ParallaxDataContainer,
-    scale: Float = 1.0f,
+    scale: Double = 1.0,
     smoothing: Boolean = false,
     callback: @ViewDslMarker ParallaxDataView.() -> Unit = {}
 ): ParallaxDataView = ParallaxDataView(data, scale, smoothing).addTo(this, callback)
@@ -77,26 +77,26 @@ interface KorgeViewBase {
  */
 class ParallaxDataView(
     data: ParallaxDataContainer,
-    scale: Float = 1.0f,
+    scale: Double = 1.0,
     smoothing: Boolean = false,
 ) : Container(), KorgeViewBase {
 
     // Delta movement in X or Y direction of the parallax background depending on the scrolling direction
-    var deltaX: Float = 0.0f
-    var deltaY: Float = 0.0f
+    var deltaX: Double = 0.0
+    var deltaY: Double = 0.0
 
     // Percentage of the position diagonally to the scrolling direction (only used with parallax plane setup)
-    var diagonal: Float = 0.0f  // Range: [0...1]
+    var diagonal: Double = 0.0  // Range: [0...1]
 
     // Accessing properties of layer objects
     private val layerMap: HashMap<String, View> = HashMap()
 
     // The middle point of the parallax plane (central vanishing point on the screen)
-    private val parallaxPlaneMiddlePoint: Float =
+    private val parallaxPlaneMiddlePoint: Double =
         when (data.config.mode) {
-            ParallaxConfig.Mode.HORIZONTAL_PLANE -> (data.config.parallaxPlane?.size?.width?.toFloat() ?: 0f) * 0.5f
-            ParallaxConfig.Mode.VERTICAL_PLANE -> (data.config.parallaxPlane?.size?.height?.toFloat() ?: 0f) * 0.5f
-            ParallaxConfig.Mode.NO_PLANE -> 0.0f  // not used without parallax plane setup
+            ParallaxConfig.Mode.HORIZONTAL_PLANE -> (data.config.parallaxPlane?.size?.width?.toDouble() ?: 0.0) * 0.5
+            ParallaxConfig.Mode.VERTICAL_PLANE -> (data.config.parallaxPlane?.size?.height?.toDouble() ?: 0.0) * 0.5
+            ParallaxConfig.Mode.NO_PLANE -> 0.0  // not used without parallax plane setup
         }
 
     val parallaxLayerSize: Int =
@@ -223,7 +223,7 @@ class ParallaxDataView(
 
     init {
         // Only the base container for all view objects needs to be scaled
-        this.scale = scale.toDouble()
+        this.scale = scale
 
         // First create background layers in the back
         constructLayer(data.backgroundLayers, data.config.backgroundLayers, smoothing)
@@ -382,7 +382,7 @@ data class ParallaxPlaneConfig(
     val offset: Int = 0,
     val name: String,
     val speedFactor: Double = 1.0,
-    val selfSpeed: Float = 0.0f,
+    val selfSpeed: Double = 0.0,
     val attachedLayersFront: List<ParallaxAttachedLayerConfig>? = null,
     val attachedLayersRear: List<ParallaxAttachedLayerConfig>? = null
 )
@@ -425,7 +425,7 @@ data class ParallaxLayerConfig(
     val name: String,
     val repeatX: Boolean = false,
     val repeatY: Boolean = false,
-    val speedFactor: Float? = null,  // It this is null than no movement is applied to the layer
-    val selfSpeedX: Float = 0.0f,
-    val selfSpeedY: Float = 0.0f
+    val speedFactor: Double? = null,  // It this is null than no movement is applied to the layer
+    val selfSpeedX: Double = 0.0,
+    val selfSpeedY: Double = 0.0
 )
