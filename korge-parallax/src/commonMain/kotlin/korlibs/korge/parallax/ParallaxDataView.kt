@@ -157,10 +157,10 @@ class ParallaxDataView(
                     } else parallaxLines[i] = (layer as SingleTile).apply {
                         if (isScrollingHorizontally) {
                             layer.repeat(repeatX = true)
-                            x = parallaxPlaneMiddlePoint.toDouble()
+                            x = parallaxPlaneMiddlePoint
                         } else {
                             layer.repeat(repeatY = true)
-                            y = parallaxPlaneMiddlePoint.toDouble()
+                            y = parallaxPlaneMiddlePoint
                         }
                     }
                 }
