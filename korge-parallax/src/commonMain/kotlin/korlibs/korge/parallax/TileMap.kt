@@ -8,9 +8,9 @@ import korlibs.memory.*
 import korlibs.korge.internal.*
 import korlibs.korge.render.*
 import korlibs.korge.view.*
-import korlibs.korge.view.tiles.*
 import korlibs.image.bitmap.*
 import korlibs.image.tiles.*
+import korlibs.image.tiles.TileMapRepeat
 import korlibs.image.tiles.TileSet
 import korlibs.math.geom.*
 import korlibs.math.geom.collider.*
