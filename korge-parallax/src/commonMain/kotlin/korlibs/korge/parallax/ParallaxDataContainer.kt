@@ -47,31 +47,40 @@ suspend fun VfsFile.readParallaxDataContainer(
         if (atlas != null) out.packInMutableAtlas(atlas) else out
     } else null
 
-    // Do a sanity check of the parallax config and the Aseprite layer config
-    // We need to make sure that the layer order is the same in both configs
+    // Re-build the layer arrays to match the order of layers in the config
+    // and the image data which was loaded from Aseprite
+
+    // Create a map of layers associated by its name
+    val backgroundLayerMap = config.backgroundLayers?.associateBy { it.name }
     backgroundLayers?.defaultAnimation?.layers?.fastForEachWithIndex { index, layerData ->
-        if (config.backgroundLayers == null ||
-            config.backgroundLayers.size <= index ||
-            layerData.name != config.backgroundLayers[index].name)
-            error("readParallaxDataContainer: Parallax config layer data not consistent between Aseprite and ParallaxDataContainer for background layer '${layerData.name}'!")
+        // Sanity check, should always be true
+        if (config.backgroundLayers != null) {
+            // Sanity check, name should always be a valid string otherwise the layer would not have been loaded from Aseprite
+            val layerName: String = layerData.name ?: error("readParallaxDataContainer: Background layer does not have a name in Aseprite file!")
+            // Sanity check, layer name should exist in map
+            config.backgroundLayers[index] = backgroundLayerMap?.get(layerName) ?: error("readParallaxDataContainer: Background layer name '${layerData.name}' not consistent between config and Aseprite file!")
+        } else error("readParallaxDataContainer: Background layer empty for layer '${layerData.name}'!")
     }
+    val foregroundLayerMap = config.foregroundLayers?.associateBy { it.name }
     foregroundLayers?.defaultAnimation?.layers?.fastForEachWithIndex { index, layerData ->
-        if (config.foregroundLayers == null ||
-            config.foregroundLayers.size <= index ||
-            layerData.name != config.foregroundLayers[index].name)
-            error("readParallaxDataContainer: Parallax config layer data not consistent between Aseprite and ParallaxDataContainer for foreground layer '${layerData.name}'!")
+        if (config.foregroundLayers != null) {
+            val layerName: String = layerData.name ?: error("readParallaxDataContainer: Foreground layer does not have a name in Aseprite file!")
+            config.foregroundLayers[index] = foregroundLayerMap?.get(layerName) ?: error("readParallaxDataContainer: Foreground layer name '${layerData.name}' not consistent between config and Aseprite file!")
+        } else error("readParallaxDataContainer: Foreground layer empty for layer '${layerData.name}'!")
     }
+    val attachedLayerFrontMap = config.parallaxPlane?.attachedLayersFront?.associateBy { it.name }
     attachedLayersFront?.defaultAnimation?.layers?.fastForEachWithIndex { index, layerData ->
-        if (config.parallaxPlane?.attachedLayersFront == null ||
-            config.parallaxPlane.attachedLayersFront.size <= index ||
-            layerData.name != config.parallaxPlane.attachedLayersFront[index].name)
-            error("readParallaxDataContainer: Parallax config layer data not consistent between Aseprite and ParallaxDataContainer for attached front layer '${layerData.name}'!")
+        if (config.parallaxPlane?.attachedLayersFront != null) {
+            val layerName: String = layerData.name ?: error("readParallaxDataContainer: Attached front layer does not have a name in Aseprite file!")
+            config.parallaxPlane.attachedLayersFront[index] = attachedLayerFrontMap?.get(layerName) ?: error("readParallaxDataContainer: Attached front layer name '${layerData.name}' not consistent between config and Aseprite file!")
+        } else error("readParallaxDataContainer: Attached front layer empty for layer '${layerData.name}'!")
     }
+    val attachedLayerRearMap = config.parallaxPlane?.attachedLayersRear?.associateBy { it.name }
     attachedLayersRear?.defaultAnimation?.layers?.fastForEachWithIndex { index, layerData ->
-        if (config.parallaxPlane?.attachedLayersRear == null ||
-            config.parallaxPlane.attachedLayersRear.size <= index ||
-            layerData.name != config.parallaxPlane.attachedLayersRear[index].name)
-            error("readParallaxDataContainer: Parallax config layer data not consistent between Aseprite and ParallaxDataContainer for attached rear layer '${layerData.name}'!")
+        if (config.parallaxPlane?.attachedLayersRear != null) {
+            val layerName: String = layerData.name ?: error("readParallaxDataContainer: Attached rear layer does not have a name in Aseprite file!")
+            config.parallaxPlane.attachedLayersRear[index] = attachedLayerRearMap?.get(layerName) ?: error("readParallaxDataContainer: Attached rear layer name '${layerData.name}' not consistent between config and Aseprite file!")
+        } else error("readParallaxDataContainer: Attached rear layer empty for layer '${layerData.name}'!")
     }
 
     // Precalculate
@@ -152,10 +161,10 @@ data class ParallaxDataContainer(
  */
 data class ParallaxConfig(
     val aseName: String,
-    val mode: Mode = Mode.HORIZONTAL_PLANE,
-    val backgroundLayers: List<ParallaxLayerConfig>? = null,
+    val mode: Mode = HORIZONTAL_PLANE,
+    val backgroundLayers: ArrayList<ParallaxLayerConfig>? = null,
     val parallaxPlane: ParallaxPlaneConfig? = null,
-    val foregroundLayers: List<ParallaxLayerConfig>? = null
+    val foregroundLayers: ArrayList<ParallaxLayerConfig>? = null
 ) {
     enum class Mode {
         HORIZONTAL_PLANE, VERTICAL_PLANE, NO_PLANE
@@ -187,8 +196,8 @@ data class ParallaxPlaneConfig(
     val speedFactor: Float = 1f,
     val parallaxPlaneSpeedFactors: FloatArrayList = FloatArrayList(capacity = 0),  // create empty list, the real size will come from the texture size
     val selfSpeed: Float = 0f,
-    val attachedLayersFront: List<ParallaxAttachedLayerConfig>? = null,
-    val attachedLayersRear: List<ParallaxAttachedLayerConfig>? = null
+    val attachedLayersFront: ArrayList<ParallaxAttachedLayerConfig>? = null,
+    val attachedLayersRear: ArrayList<ParallaxAttachedLayerConfig>? = null
 )
 
 /**

@@ -143,7 +143,7 @@ class ParallaxDataView(
 
         // Add attached layers which will be below parallax plane
         if (attachedLayersRear != null && config.attachedLayersRear != null) {
-            constructAttachedLayers(attachedLayersRear, config.attachedLayersRear, smoothing, isScrollingHorizontally, disableScrollingX, disableScrollingY)
+            constructAttachedLayers(attachedLayersRear, config.attachedLayersRear, config.selfSpeed, smoothing, isScrollingHorizontally, disableScrollingX, disableScrollingY)
         }
 
         layerMap[config.name] = container {
@@ -171,11 +171,11 @@ class ParallaxDataView(
 
         // Add attached layers which will be on top of parallax plane
         if (attachedLayersFront != null && config.attachedLayersFront != null) {
-            constructAttachedLayers(attachedLayersFront, config.attachedLayersFront, smoothing, isScrollingHorizontally, disableScrollingX, disableScrollingY)
+            constructAttachedLayers(attachedLayersFront, config.attachedLayersFront, config.selfSpeed, smoothing, isScrollingHorizontally, disableScrollingX, disableScrollingY)
         }
     }
 
-    private fun constructAttachedLayers(attachedLayers: ImageData, attachedLayersConfig: List<ParallaxAttachedLayerConfig>,
+    private fun constructAttachedLayers(attachedLayers: ImageData, attachedLayersConfig: List<ParallaxAttachedLayerConfig>, selfSpeed: Float,
                                         smoothing: Boolean, isScrollingHorizontally: Boolean, disableScrollingX: Boolean,
                                         disableScrollingY: Boolean) {
         if (attachedLayers.frames.isEmpty()) error("No attached layers not found. Check that name of attached layers in Aseprite matches the name in the parallax config.")
@@ -192,18 +192,16 @@ class ParallaxDataView(
                 if (!disableScrollingX && isScrollingHorizontally) {
                     // Attach the layer to the position on the parallax plane (either top or bottom border
                     // depending on attachBottomRight config)
-                    val speedFactor =parallaxPlaneSpeedFactor[layer.y.toInt() + (layer.height.toInt().takeIf { conf.attachBottomRight } ?: 0)]
+                    val speedFactor = parallaxPlaneSpeedFactor[layer.y.toInt() + (layer.height.toInt().takeIf { conf.attachBottomRight } ?: 0)]
                     addUpdater {
                         // Calculate the offset for the inner scrolling of the layer
-// TODO
-//                        x += (((deltaX * speedFactor) + (config.selfSpeed * speedFactor)) * it.milliseconds).toFloat()
+                        x += (((deltaX * speedFactor) + (selfSpeed * speedFactor)) * it.milliseconds).toFloat()
                     }
                 } else if (!disableScrollingY && !isScrollingHorizontally) {
                     val speedFactor = parallaxPlaneSpeedFactor[layer.x.toInt() + (layer.width.toInt().takeIf { conf.attachBottomRight } ?: 0)]
                     addUpdater {
                         // Calculate the offset for the inner scrolling of the layer
-// TODO
-//                        x += (((deltaY * speedFactor) + (config.selfSpeed * speedFactor)) * it.milliseconds).toFloat()
+                        x += (((deltaY * speedFactor) + (selfSpeed * speedFactor)) * it.milliseconds).toFloat()
                     }
                 }
             }

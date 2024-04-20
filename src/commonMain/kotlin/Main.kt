@@ -41,17 +41,17 @@ class MainAseParallaxSample : Scene() {
         // The names of the layers and the parallax plane must refer to the name of the layers in the Aseprite file "parallax_background.ase".
         // The Y-position of the attached layers in Aseprite will determine also the position of the layer in the parallax background.
         private val parallaxBackgroundConfig = ParallaxConfig(
-            // Set the virtual size of the parallax background
-            // It is usually equal to the virtual size of the main Korge view
-            size = SizeInt(384, 216),
+            aseName = "parallax_background.ase",
+            mode = ParallaxConfig.Mode.HORIZONTAL_PLANE,
             // No background layers used in this example - following lines are here for reference
             //backgroundLayers = listOf(
             //    ParallaxLayerConfig("background_layer_1", repeatX = true, speedX = 0.0, selfSpeedX = 0.0),
             //    ParallaxLayerConfig("background_layer_2", repeatX = true, speedX = 0.0, selfSpeedX = 0.0)
             //),
             parallaxPlane = ParallaxPlaneConfig(
-                "sliced_parallax_plane", speed = 0.8,
-                attachedLayers = listOf(
+                name = "sliced_parallax_plane",
+                speedFactor = 0.8f,
+                attachedLayersFront = arrayListOf(
                     // The first three layers are attached to the top parallax plane
                     ParallaxAttachedLayerConfig("top_attached_layer_1", repeat = true),
                     ParallaxAttachedLayerConfig("top_attached_layer_2", repeat = true),
@@ -78,7 +78,7 @@ class MainAseParallaxSample : Scene() {
         override suspend fun SContainer.sceneInit() {
             val sw = Stopwatch().start()
             // Here the Aseprite file will be read by using the above configuration
-            parallaxData = resourcesVfs["parallax_background.ase"].readParallaxDataContainer(parallaxBackgroundConfig, atlas = atlas)
+            parallaxData = resourcesVfs[parallaxBackgroundConfig.aseName].readParallaxDataContainer(parallaxBackgroundConfig, atlas = atlas)
             println("loaded resources in ${sw.elapsed}")
         }
 
@@ -89,8 +89,12 @@ class MainAseParallaxSample : Scene() {
                 // Uncomment to show atlas for checking how the Aseprite layers and parallax plane will be stored in the generated atlas
                 //image(atlas.bitmap) { scale(0.5); smoothing = false }
 
+                // Set the virtual size of the parallax background
+                // It is usually equal to the virtual size of the main Korge view
+                val size = SizeInt(384, 216)
+
                 // Create parallax background view which uses above initialized data container
-                parallaxBackground = parallaxDataView(parallaxData) {
+                parallaxBackground = parallaxDataView(parallaxData, size) {
                     // Add constant scrolling factor
                     deltaX = 0.05
                 }
@@ -116,8 +120,8 @@ class MainAseParallaxSample : Scene() {
                                 // Give aseprite more time to finish writing the files
                                 kotlinx.coroutines.delay(100)
                                 // On reloading do not save into texture atlas otherwise it will overflow at some time
-                                parallaxData = resourcesVfs["parallax_background.ase"].readParallaxDataContainer(parallaxBackgroundConfig, atlas = null)
-                                parallaxBackground = parallaxDataView(parallaxData) {
+                                parallaxData = resourcesVfs[parallaxBackgroundConfig.aseName].readParallaxDataContainer(parallaxBackgroundConfig, atlas = null)
+                                parallaxBackground = parallaxDataView(parallaxData, size) {
                                     diagonal = saveDiagonal
                                     deltaX = saveDelta
                                 }
